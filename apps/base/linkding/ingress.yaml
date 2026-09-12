@@ -5,6 +5,10 @@ metadata:
   namespace: linkding
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - ld.am-labs.dev
+      secretName: ld-tls-secret
   rules:
     - host: ld.am-labs.dev
       http:
