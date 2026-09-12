@@ -33,3 +33,8 @@ spec:
         ingressClassName: traefik
         hosts:
           - grafana.am-labs.dev
+
+        tls:
+          - secretName: grafana-tls-secret
+            hosts:
+              - grafana.am-labs.dev
