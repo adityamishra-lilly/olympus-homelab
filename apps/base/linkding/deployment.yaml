@@ -4,6 +4,8 @@ metadata:
   name: linkding
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: linkding
@@ -22,7 +24,7 @@ spec:
           ports:
             - containerPort: 9090
           securityContext:
-            allowPriviledgeEscalation: false
+            allowPrivilegeEscalation: false
           volumeMounts:
             - name: linkding-data
               mountPath: /etc/linkding/data
