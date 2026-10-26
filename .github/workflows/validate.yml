@@ -1,0 +1,53 @@
+name: Validate manifests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  KUSTOMIZE_VERSION: "5.7.1" # check github.com/kubernetes-sigs/kustomize/releases
+  KUBECONFORM_VERSION: "0.7.0" # check github.com/yannh/kubeconform/releases
+  # Community schemas for CRDs (HelmRelease, HelmRepository, Flux Kustomization, ...)
+  CRD_CATALOG: "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install tools
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bin"
+          curl -sSfL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" \
+            | tar -xz -C "$RUNNER_TEMP/bin" kustomize
+          curl -sSfL "https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            | tar -xz -C "$RUNNER_TEMP/bin" kubeconform
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Validate Flux Kustomizations
+        run: |
+          kubeconform -strict -summary \
+            -schema-location default -schema-location "$CRD_CATALOG" \
+            clusters/staging/apps.yaml clusters/staging/monitoring.yaml
+
+      - name: Validate overlays
+        run: |
+          set -euo pipefail
+          for dir in apps/staging monitoring/controllers/staging monitoring/configs/staging; do
+            echo "::group::$dir"
+            kustomize build "$dir" | kubeconform -strict -summary -skip Secret \
+              -schema-location default -schema-location "$CRD_CATALOG"
+            echo "::endgroup::"
+          done

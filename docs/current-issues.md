@@ -59,18 +59,6 @@ On a single node with `local-path` that's straightforward. It gets more interest
 more than one node and the volume stops being reachable from wherever the pod lands — see the
 multi-node section of the roadmap.
 
-## Implicit kustomization in apps/staging
-
-The `apps` Kustomization points at `./apps/staging`, and that directory has no
-`kustomization.yaml`. Flux's kustomize-controller falls back to generating one by scanning the
-directory for manifests, which is why it works.
-
-It works, but it's the one place in the repo where what gets applied isn't written down. The
-`.sops.yaml` sitting in that directory gets swept up in the scan too. Anything dropped into that
-folder is deployed by virtue of existing, which isn't the property I want from a GitOps repo.
-
-**Fix:** add an explicit `kustomization.yaml` listing `linkding/` as its only resource.
-
 ## No CI
 
 There's no `.github/workflows`, no pre-commit config, and no Flux `Alert`/`Provider` wired up
@@ -79,7 +67,8 @@ to apply it, and nothing tells me when a reconciliation fails — I find out by 
 kustomizations` or by noticing a service is down.
 
 **Fix:** two separate pieces.
-- A workflow running `kustomize build` over each overlay and `kubeconform` against the real CRD
+
+- A workflow running `kustomize build` over each overlay and `kubeconform` against the real CRD --DONE
   schemas, so structural mistakes fail on the PR rather than in the cluster.
 - A notification-controller `Provider` and `Alert` pushing reconciliation failures somewhere I'll
   actually see them.
