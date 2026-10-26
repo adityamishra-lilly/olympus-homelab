@@ -66,6 +66,8 @@ Traefik handles ingress and so does the `local-path` StorageClass. I use plain `
 
 Certificates are the weakest part right now. They're issued out-of-band and committed as SOPS-encrypted `kubernetes.io/tls` secrets, which makes renewal a manual job I will eventually forget to do. cert-manager with an ACME issuer is the obvious fix.
 
+How the Cloudflare side fits together (SSL modes, Origin CA certs, locking down the origin) is written up in [`docs/cloudflare-tls.md`](docs/cloudflare-tls.md).
+
 ## Where this is going
 
 **Multi-node.** On one box the interesting parts of Kubernetes are decorative. PodDisruptionBudgets, anti-affinity, topology spread constraints, draining a node for a kernel update; all of it is a
