@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: site
+  name: adi
   labels:
-    app: site
+    app: adi
 spec:
   replicas: 2
   revisionHistoryLimit: 3
@@ -14,11 +14,11 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: site
+      app: adi
   template:
     metadata:
       labels:
-        app: site
+        app: adi
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -28,7 +28,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: site
+        - name: adi
           image: ghcr.io/adityamishra-lilly/adi:main-6d7ad00-1793046164
           ports:
             - name: http
