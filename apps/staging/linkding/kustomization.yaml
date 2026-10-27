@@ -4,4 +4,3 @@ namespace: linkding
 resources:
   - ../../base/linkding/
   - ld-tls-secret.yaml
-  # - cloudflare.yaml
