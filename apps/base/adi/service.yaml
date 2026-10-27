@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: adi
+spec:
+  type: ClusterIP
+  selector:
+    app: adi
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
