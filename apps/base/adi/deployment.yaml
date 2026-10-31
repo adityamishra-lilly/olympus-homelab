@@ -29,7 +29,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: adi
-          image: ghcr.io/adityamishra-lilly/adi:main-979d66e-1793389215
+          image: ghcr.io/adityamishra-lilly/adi:main-ecd5cc5-1793406248
           ports:
             - name: http
               containerPort: 8080
